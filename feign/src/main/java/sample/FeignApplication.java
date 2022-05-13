@@ -1,11 +1,13 @@
 package sample;
 
+import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +45,9 @@ public class FeignApplication {
         SpringApplication.run(FeignApplication.class, args);
     }
 
-    @GetMapping("/greetingReactive")
-    public Mono<String> greetingReactive() {
-        return reactiveFeignClient.greeting().map(s -> "reactive feign! : " + s);
+    @GetMapping(value = "/greetingReactive", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Person> greetingReactive() {
+        return reactiveFeignClient.greeting();
     }
 
     @GetMapping("/greetingReactiveWithParam")
@@ -75,4 +77,25 @@ public class FeignApplication {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+}
+class Person {
+
+    public Person() {
+        super();
+    }
+
+    public Person(String name) {
+        this();
+        this.name = name;
+    }
+
+    String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

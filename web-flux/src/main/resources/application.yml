@@ -1,7 +1,9 @@
 spring:
   application:
     name: web-flux-app
-
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
 server:
   port: 8874
 
