@@ -3,7 +3,7 @@ spring:
     name: feign-app
 
 server:
-  port: 0
+  port: 8089
 
 eureka:
   client:
@@ -17,7 +17,11 @@ greeting-other:
   service:
     name: web-flux-app
 
+
 #greeting-other:
 #  ribbon:
 #    # the eureka vipAddress of the target service
+logging:
+  level:
+    org.springframework: info
 #    DeploymentContextBasedVipAddresses: web-flux-app

@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.discovery.EurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import reactivefeign.ReactiveOptions;
 import reactivefeign.spring.config.ReactiveFeignClient;
 import reactivefeign.webclient.WebClientFeignCustomizer;
 import reactor.core.publisher.Mono;
@@ -25,21 +27,26 @@ public interface GreetingReactive {
     @GetMapping("/greetingWithParam")
     Mono<String> greetingWithParam(@RequestParam(value = "id") Long id);
 
+    @Configuration
     class CustomConfiguration {
 
         private static final int MAX_CODEC_MEMORY_SIZE = 2 * 1024 * 1024;
 
         public static ObjectMapper buildObjectMapper(Module... modules) {
-            final ObjectMapper configure = new ObjectMapper()
+            final ObjectMapper objectMapper = new ObjectMapper()
                     .registerModules(modules)
                     .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-            return configure;
+            return objectMapper;
         }
+
 
         @Bean
         public WebClientFeignCustomizer webClientFeignCustomizer(Module... modules) {
+            final ObjectMapper objectMapper = new ObjectMapper()
+                    .registerModules(modules)
+                    .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+
             return builder -> {
-                ObjectMapper objectMapper = buildObjectMapper(modules);
                 builder.exchangeStrategies(
                         buildExchangeStrategies(objectMapper));
             };
